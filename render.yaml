@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: project-relay
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm run install:all && npm run build
+    startCommand: cd backend && npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://project-relay.onrender.com
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:3000,http://localhost:3001,https://project-relay.onrender.com
+    autoDeploy: true

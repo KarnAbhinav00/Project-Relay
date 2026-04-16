@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: cd backend && npm ci
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Generate Prisma client
+        run: cd backend && npm run prisma:generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Dependency vulnerability scan
+        run: npm audit --audit-level=high
+
+      - name: Backend smoke health check
+        run: |
+          cd backend
+          PORT=5050 NODE_ENV=development JWT_SECRET=test-secret ALLOWED_ORIGINS=http://localhost:3000 node src/server.js &
+          SERVER_PID=$!
+          sleep 12
+          curl --fail http://localhost:5050/health
+          kill $SERVER_PID
+
+      - name: Build frontend
+        run: npm run build
