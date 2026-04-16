@@ -16,7 +16,7 @@
     "test:backend": "cd backend && npm run test",
     "test:frontend": "cd frontend && npm run test",
     "start": "cd backend && NODE_ENV=production npm start",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "install:all": "npm install --include=optional && cd backend && npm install --include=optional && cd ../frontend && npm install --include=optional",
     "prisma:generate": "cd backend && npm run prisma:generate",
     "prisma:migrate": "cd backend && npm run prisma:migrate"
   },
